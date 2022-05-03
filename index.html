@@ -4,41 +4,24 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>QR Clock</title>
+	<title>QR PIN</title>
 	<script src="qrcode.js"></script>
 </head>
 
 <body>
-	<h1>QR Clock</h1>
-	<p>
-		add <input type="number" id="add" value="1" min="0"> second(s)
-	</p>
+	<h1>QR PIN</h1>
 	<p>
 		<div id="qrcode"></div>
 	</p>
-	<p>
-		<code id="cmd"></code>
-	</p>
 	<script>
-		let add = document.getElementById('add');
-		let cmd = document.getElementById('cmd');
-		cmd.innerText = `date -u -s ${date()} && hwclock --systohc`;
+		var pin = new Uint32Array(6);
+		self.crypto.getRandomValues(pin);
+		pin = pin.map(x => x%10).join('');
 		var qrcode = new QRCode(document.getElementById('qrcode'), {
-			text: cmd.innerText,
+			text: pin,
 			width: 512,
 			height: 512
 		});
-		function date() {
-			let d = new Date();
-			d.setSeconds(d.getSeconds() + Number(add.value));
-			d.setMilliseconds(0);
-			return d.toISOString();
-		}
-		function tick() {
-			cmd.innerText = `date -u -s ${date()} && hwclock --systohc`;
-			qrcode.makeCode(cmd.innerText);
-		}
-		setInterval(tick, 1000);
 	</script>
 </body>
 
